@@ -33,5 +33,14 @@ class Suffling {
         semaphore.release();
     }
 
+    fun getCopy() : ArrayList <Payment> {
+        semaphore.acquire();
+        var temp = ArrayList <Payment>(payments);
+        payments.clear();
+        semaphore.release();
+        return  temp;
+
+    }
+
 
 }
