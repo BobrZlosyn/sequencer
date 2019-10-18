@@ -1,9 +1,7 @@
 package ds.sequencer
 
-import ds.core.Payment
-import ds.core.PaymentType
-import ds.core.ClientPayment
-import java.util.concurrent.ThreadLocalRandom
+import ds.core.payment.Payment
+import ds.core.payment.ClientPayment
 
 class GeneratingWholePayment (){
 

@@ -1,7 +1,6 @@
 package ds.shuffler
 
-import ds.core.Payment
-import java.util.*
+import ds.core.payment.Payment
 import java.util.concurrent.Semaphore
 import kotlin.collections.ArrayList
 
