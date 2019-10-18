@@ -1,35 +1,34 @@
 import ds.bank.Account
 import spark.Spark.*
 import com.google.gson.Gson
+import ds.bank.APIhandler
 import ds.bank.ManagePayments
-import ds.core.Payment
-
-
+import ds.core.common.Logger
 
 
 fun main(args: Array<String>) {
+
+    var logger = Logger();
+
+    /*val conf = Configiruation(args, 2);
+    var valid = conf.validate();
+    if (!valid) {
+        logger.logSevere("Wrong arguments. It should be ip, port")
+        exitProcess(-1);
+    }
+
+    port(conf.getPort());
+    ipAddress(conf.getIP())
+    */
+
     val defaultAccount = Account(name = "default", money = 5000000, id = 1);
     port(8084)
-    ipAddress("192.168.1.110")
+
     val gson = Gson()
-    get("/") { req, res -> "Banka vás vítá" }
+    var accounts = HashMap<String, Account>();
+    accounts.put(defaultAccount.name, defaultAccount);
+    var managePayments = ManagePayments(account = accounts);
 
-    get("/money", "application/json", {
-            request, response ->
-        defaultAccount.money
-    } , gson::toJson);
-
-    var managePayments = ManagePayments(account = defaultAccount);
-    patch("/bank/patch", "application/json", {
-            request, response ->
-        println(request.body());
-        var paymentsRaw = request.body();
-        var paymentArray = gson.fromJson(paymentsRaw, Array<Payment>::class.java)
-        managePayments.manageArray(paymentArray);
-        println(managePayments.account.money);
-
-        "ok"
-
-    }, gson::toJson);
+    var api = APIhandler(gson, accounts, managePayments, logger);
 
 }
