@@ -1,24 +1,41 @@
 import com.google.gson.Gson
 import ds.client.ClientAPIHandler
 import ds.client.SendingMessages
+import ds.core.common.Configiruation
+import ds.core.common.Logger
 import spark.Spark.*
 import java.util.concurrent.ThreadLocalRandom
-
+import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
+    val conf = Configiruation(args, 4);
 
-    port(8080);
+    var paymentIP = conf.getValidateIPAtIndex(2)
+    var paymentPort = conf.getValidatePortAtIndex(3)
+
+    var maxCount = 0;
+    var infinite = false;
+    if (args.size > 4) {
+        try {
+            maxCount = Integer.parseInt(args[4]);
+        } catch (e : Exception) {
+            conf.logger.logWarning("Wrong count parameter, running infinite sending")
+            infinite = true;
+        }
+    }else {
+        infinite = true;
+        maxCount = 0;
+    }
+
 
     var clientId = ThreadLocalRandom.current().nextInt(1, 9999);
-    println("Was created client with id: $clientId");
-
-
-    var infinite = false;
-    var maxCount = 111;
+    conf.logger.logInfo("Was created client with id: $clientId");
 
     var gson = Gson();
-    var messaging = SendingMessages(infinite, maxCount, clientId, gson)
+    var messaging = SendingMessages(infinite, maxCount, clientId, gson, conf.logger)
+    messaging.port = paymentPort;
+    messaging.ip = paymentIP;
     var clientAPI = ClientAPIHandler(messaging, gson);
     clientAPI.initAPI();
     messaging.run();

@@ -1,0 +1,71 @@
+VAGRANTFILE_API_VERSION = "2"
+
+cluster = {
+  "bank-1" => { :ip => "10.0.1.11", :cpus => 1, :mem => 1024 },
+  #"bank-2" => { :ip => "10.0.1.12", :cpus => 1, :mem => 1024 },
+  #"bank-3" => { :ip => "10.0.1.13", :cpus => 1, :mem => 1024 },
+  #"bank-4" => { :ip => "10.0.1.14", :cpus => 1, :mem => 1024 },
+  #"bank-5" => { :ip => "10.0.1.15", :cpus => 1, :mem => 1024 },
+}
+ 
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+    config.vm.synced_folder ".", "/vagrant"
+    config.vm.box = "geerlingguy/centos7"
+    config.ssh.insert_key = false
+
+	config.vm.define "shuffler" do |cfg|
+        cfg.vm.network "private_network", ip: "10.0.1.20"
+        cfg.vm.hostname = "shuffler"
+		
+		config.vm.provision "file", source: "./artifacts/shuffler_jar/shuffler.jar", destination: "$HOME/app/"
+        config.vm.provision "shell", inline: <<-SHELL
+            yum -q -y install java-1.8.0-openjdk
+			java -jar /home/vagrant/app/shuffler.jar "10.0.1.20" "8080" >> logs
+        SHELL
+	end
+	
+
+    cluster.each_with_index do |(hostname, info), index|
+        config.vm.define hostname do |cfg|
+            cfg.vm.provider :virtualbox do |vb, override|
+                override.vm.network :private_network, ip: "#{info[:ip]}"
+                override.vm.hostname = hostname
+                vb.name = hostname
+                vb.customize ["modifyvm", :id, "--memory", info[:mem], "--cpus", info[:cpus], "--hwvirtex", "on"]
+				
+				config.vm.provision "file", source: "./artifacts/bank_jar/bank.jar", destination: "$HOME/app/"
+				config.vm.provision "shell", inline: <<-SHELL
+					yum -q -y install java-1.8.0-openjdk
+					java -jar /home/vagrant/app/bank.jar "#{info[:ip]}" "8080" "10.0.1.20" "8080" >> logs &
+                SHELL
+				 
+            end # end provider
+        end # end config
+    end # end cluster
+	
+	config.vm.define "sequencer" do |cfg|
+        cfg.vm.network "private_network", ip: "10.0.1.30"
+        cfg.vm.hostname = "sequencer"
+		
+		config.vm.provision "file", source: "./artifacts/sequencer_jar/sequencer.jar", destination: "$HOME/app/"
+        config.vm.provision "shell", inline: <<-SHELL
+            yum -q -y install java-1.8.0-openjdk
+			java -jar /home/vagrant/app/shuffler.jar "10.0.1.30" "8080" "10.0.1.20" "8080" >> logs
+        SHELL
+	end
+	
+	config.vm.define "client" do |cfg|
+        cfg.vm.network "private_network", ip: "10.0.1.40"
+        cfg.vm.hostname = "client"
+		
+		config.vm.provision "file", source: "./artifacts/client_jar/client.jar", destination: "$HOME/app/"
+        config.vm.provision "shell", inline: <<-SHELL
+            yum -q -y install java-1.8.0-openjdk
+			java -jar /home/vagrant/app/client.jar "10.0.1.40" "8080" "10.0.1.30" "8080" "40" >> logs
+        SHELL
+	end
+end
+#
+# EOF
+#

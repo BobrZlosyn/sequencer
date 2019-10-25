@@ -1,21 +1,25 @@
 package ds.client
 
 import com.google.gson.Gson
+import ds.core.common.Logger
 import ds.core.connection.ConMethod
 import ds.core.connection.Connection
 import ds.core.common.Status
-import ds.shuffler.sendPaymentsToBank
+import kotlin.math.log
 
-class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson : Gson){
+class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson : Gson, logger: Logger){
 
     var infinite =  infinite;
     var maxCount = maxCount;
     var thread : Thread;
     var clientId = clientId;
     var gson = gson;
+    var logger = logger;
     var stopped = false;
+    var ip = "";
+    var port = 8080;
 
-    private var PAYMENT_URL = "http://localhost:8081/sequencer/put"
+    private var PAYMENT_URL = "/sequencer/put"
 
     init {
        thread =  setThread();
@@ -57,19 +61,15 @@ class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson 
                     if (success) {
                         clientPayment = generatingPayment.generateNext("default", clientId);
                     }
-                    val client = Connection(PAYMENT_URL);
-                    success = client.connect(ConMethod.PUT);
+                    val client = Connection(ip, port,PAYMENT_URL, logger);
+                    success = client.sendMessage(ConMethod.PUT, gson.toJson(clientPayment));
+                    client.disconnect();
                     if (success) {
-                        client.sendData(gson.toJson(clientPayment));
-                        var response = client.readResponse();
-                        client.disconnect();
                         count++;
-                        println("dddddddd")
-                        var status = gson.fromJson(response, Status::class.java);
-                        if (status.status.equals("fail")) {
-                            println(response);
-                        }
+                        println(count);
                     }
+
+
                     Thread.sleep(50);
                 }
                 stopped = true;

@@ -1,5 +1,8 @@
 package ds.core.connection
 
+import com.google.gson.Gson
+import ds.core.common.Logger
+import ds.core.common.Status
 import java.net.HttpURLConnection
 import java.net.URL
 import java.io.InputStreamReader
@@ -8,24 +11,28 @@ import java.net.ConnectException
 import java.nio.charset.Charset
 
 
-class Connection (url: String) {
-    var urlPage : URL;
-    var con : HttpURLConnection;
+class Connection (ip : String, port: Int, url: String, logger: Logger) {
+    private var urlPage : URL;
+    private var con : HttpURLConnection;
+    var urlPath : String;
+    private var logger = logger;
 
     init {
-        urlPage = URL(url);
+        urlPath = getURL(ip, port, url);
+        urlPage = URL(urlPath);
         con = urlPage.openConnection() as HttpURLConnection;
 
     }
 
-    fun newConnection(url: String) {
+    fun newConnection(ip : String, port: Int, url: String) {
         con.disconnect();
-        urlPage = URL(url);
+        urlPath = getURL(ip, port, url);
+        urlPage = URL(urlPath);
         con = urlPage.openConnection() as HttpURLConnection;
 
     }
 
-    fun connect (method: ConMethod) : Boolean{
+    private fun connect (method: ConMethod) : Boolean{
 
         con.connectTimeout = 5000;
         con.readTimeout = 5000;
@@ -42,14 +49,14 @@ class Connection (url: String) {
         try {
             con.connect();
         }catch (e : ConnectException) {
-            println("Couldnt connect to ${urlPage.path}")
+            logger.logWarning ("Couldnt connect to $urlPath")
             return false;
         }
 
         return true;
     }
 
-    fun sendData(json: String) {
+    private fun sendData(json: String) {
         con.outputStream.use { os ->
             val input = json.toByteArray(Charset.forName("utf-8"));
             os.write(input, 0, input.size)
@@ -60,7 +67,7 @@ class Connection (url: String) {
         val status = con.responseCode
 
         if (status != 200) {
-            println(con.responseCode);
+            logger.logWarning("Error in reading response from $urlPath with status $status");
             return ""
         }
 
@@ -81,6 +88,29 @@ class Connection (url: String) {
 
     fun disconnect(){
         con.disconnect();
+    }
+
+    private fun getURL (ip : String, port: Int, url: String ) : String {
+        return "http://$ip:$port$url";
+    }
+
+    fun sendMessage(method : ConMethod, json: String) : Boolean {
+        try {
+            var success = connect(method);
+            if (success) {
+                sendData(json);
+                var response = readResponse();
+
+                var status = Gson().fromJson(response, Status::class.java);
+                if (status.status.equals("fail")) {
+                    return false;
+                }
+                return true;
+            }
+        }catch (e: ConnectException) {
+            logger.logWarning("Couldnt connect to bank at $urlPath")
+        }
+        return false;
     }
 
 }

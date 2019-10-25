@@ -1,20 +1,22 @@
 package ds.sequencer
 
 import com.google.gson.Gson
+import ds.core.common.Logger
 import ds.core.connection.ConMethod
 import ds.core.connection.Connection
 import ds.core.payment.Payment
 import ds.core.common.Status
-import ds.shuffler.sendPaymentsToBank
 import java.net.ConnectException
 
-class SendingMessages (gson : Gson){
+class SendingMessages (gson : Gson, logger: Logger){
 
     var thread : Thread;
     var gson = gson;
-
+    var logger = logger;
+    var ip = "";
+    var port = 8080;
     private var array : ArrayList <Payment>;
-    private var SHUFFLE_URL = "http://localhost:8082/shuffler/put"
+    private var SHUFFLE_URL = "/shuffler/put"
 
     init {
         thread =  setThread();
@@ -23,7 +25,7 @@ class SendingMessages (gson : Gson){
 
     fun run() {
         if (!isRunning()) {
-            thread.run();
+            thread.start();
         }
     }
 
@@ -45,11 +47,12 @@ class SendingMessages (gson : Gson){
                 }
 
                 var success = false;
-                var payment = array.get(0);
+                var payment = array[0];
                 try {
-                    success = sendPaymentToShuffle(payment);
+                    var client = Connection(ip, port, SHUFFLE_URL, logger)
+                    success = client.sendMessage(ConMethod.PUT, gson.toJson(payment));
                 }catch (e: ConnectException) {
-                    println("Couldnt connect to shuffler");
+                    logger.logWarning("Couldnt connect to shuffler");
                 }
 
                 if (!success) {
@@ -62,25 +65,6 @@ class SendingMessages (gson : Gson){
         var t = Thread(task);
 
         return t;
-    }
-
-
-    private fun sendPaymentToShuffle(wholePayment: Payment) : Boolean {
-        val client = Connection(SHUFFLE_URL);
-        val gson = Gson();
-        var success  = client.connect(ConMethod.PUT);
-        if (success) {
-            client.sendData(gson.toJson(wholePayment));
-            var response = client.readResponse();
-            var status = gson.fromJson(response, Status::class.java);
-            if (!status.status.equals("ok")) {
-                println(response);
-            }
-
-            return true;
-        }
-        return false
-
     }
 
     fun addPayment(payment: Payment) {
