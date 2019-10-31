@@ -1,4 +1,5 @@
 import com.google.gson.Gson
+import ds.core.common.Adresses
 import ds.core.common.Configiruation
 import ds.core.common.Logger
 import ds.core.common.Status
@@ -7,9 +8,6 @@ import spark.Spark.*
 import ds.sequencer.GeneratingWholePayment
 import ds.sequencer.SendingMessages
 import kotlin.system.exitProcess
-
-private var PAYMENT_URL = "/sequencer/put"
-
 
 fun main(args: Array<String>) {
 
@@ -25,7 +23,8 @@ fun main(args: Array<String>) {
 
     var generatingPayment = GeneratingWholePayment();
 
-    put (PAYMENT_URL, "application/json", {
+
+    post (Adresses.SEQUENCER_PAYMENT_POST.url, Adresses.JSON_FORMAT.url, {
             request, response ->
         var paymentRaw = request.body();
         conf.logger.logInfo("Receiving $paymentRaw")

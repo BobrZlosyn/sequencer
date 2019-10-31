@@ -15,7 +15,6 @@ class SendPayment  (logger: Logger){
     var banks = ArrayList<Bank>();
     var thread : Thread
     var logger = logger;
-    private var gson = Gson()
 
     var semaphore = Semaphore(1);
     init {
@@ -38,7 +37,7 @@ class SendPayment  (logger: Logger){
                 if (payments.isNotEmpty()) {
                     var payment = payments[0];
                     var con = Connection(bank.ip, bank.port, bank.url, logger);
-                    var success = con.sendMessage(ConMethod.PATCH, Gson().toJson(payment));
+                    var success = con.sendMessage(bank.method, Gson().toJson(payment));
                     if (success) {
                         banks[index].restPayments.remove(payment);
                     }
@@ -61,9 +60,9 @@ class SendPayment  (logger: Logger){
         if (!exist) {
             banks.add(bank)
         }
-        banks.get(banks.indexOf(bank)).restPayments.addAll(payments);
-        banks.get(banks.indexOf(bank)).restPayments.shuffle();
-        println(banks.get(banks.indexOf(bank)).restPayments.size)
+        banks[banks.indexOf(bank)].restPayments.addAll(payments);
+        banks[banks.indexOf(bank)].restPayments.shuffle();
+
         semaphore.release();
     }
 }

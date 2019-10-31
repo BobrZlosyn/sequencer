@@ -8,6 +8,11 @@ import java.util.concurrent.Semaphore
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+/**
+ * Class with thread which process all payments in order
+ * @param account hashmap of all accounts
+ * @param logger instance of logger
+ */
 class ManagePayments (account: HashMap<String, Account>, logger: Logger) {
 
     private var accounts = account;
@@ -16,13 +21,16 @@ class ManagePayments (account: HashMap<String, Account>, logger: Logger) {
     var waitingForNumber = 0;
     private var thread : Thread;
     var shouldRun = false;
-    var semaphore = Semaphore(1)
     var logger = logger;
 
     init {
         thread = threadDefine();
 
     }
+
+    /**
+     * defining thread
+     */
     private fun threadDefine() : Thread {
         return Thread {
             while (true) {
@@ -44,6 +52,11 @@ class ManagePayments (account: HashMap<String, Account>, logger: Logger) {
             }
         }
     }
+
+    /**
+     * checks if bank can do payment and prepares rest of payments
+     * @param payment payment to process
+     */
     fun manageArray(payment: Payment) {
         if (payment.sequence == waitingForNumber) {
             doPayment(payment);
@@ -69,7 +82,11 @@ class ManagePayments (account: HashMap<String, Account>, logger: Logger) {
         }
     }
 
-    fun doPayment(payment: Payment) {
+    /**
+     * does payment
+     * @param payment payment to do
+     */
+    private fun doPayment(payment: Payment) {
         logger.logInfo("Doing payment : " + payment.sequence + " money> " + payment.money + " on account> " + payment.name + " ")
         var account = findAccountByName(payment.name);
         if (payment.type == PaymentType.CREDIT){
@@ -79,16 +96,33 @@ class ManagePayments (account: HashMap<String, Account>, logger: Logger) {
         }
     }
 
+    /**
+     * add money to account
+     * @param account account
+     * @param money money to add
+     */
     private fun doCreditPayment(account: Account, money : Int) {
         account.money += money;
         accounts.put(account.name, account);
     }
+
+    /**
+     * decrease money on account if can
+     * @param account account
+     * @param money money to take
+     */
     private fun doDebitPayment(account: Account, money: Int) {
         if (account.money - money >= 0) {
             account.money -= money;
         }
         accounts.put(account.name, account);
     }
+
+    /**
+     * finding account by name
+     * @param name name of account
+     * @return account instance
+     */
     private fun findAccountByName(name: String) : Account {
         return accounts.getValue(name);
     }

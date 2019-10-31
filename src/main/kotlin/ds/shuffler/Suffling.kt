@@ -6,13 +6,8 @@ import kotlin.collections.ArrayList
 
 class Suffling {
 
-    private var payments : ArrayList <Payment>;
-    private var semaphore : Semaphore;
-
-    init {
-        payments = ArrayList<Payment>();
-        semaphore = Semaphore(1);
-    }
+    private var payments : ArrayList <Payment> = ArrayList<Payment>();
+    private var semaphore : Semaphore = Semaphore(1);
 
     fun addToList(payment: Payment) {
         semaphore.acquire();

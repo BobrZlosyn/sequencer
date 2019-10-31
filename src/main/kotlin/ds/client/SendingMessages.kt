@@ -1,11 +1,9 @@
 package ds.client
 
 import com.google.gson.Gson
+import ds.core.common.Adresses
 import ds.core.common.Logger
-import ds.core.connection.ConMethod
 import ds.core.connection.Connection
-import ds.core.common.Status
-import kotlin.math.log
 
 class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson : Gson, logger: Logger){
 
@@ -18,8 +16,6 @@ class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson 
     var stopped = false;
     var ip = "";
     var port = 8080;
-
-    private var PAYMENT_URL = "/sequencer/put"
 
     init {
        thread =  setThread();
@@ -61,16 +57,16 @@ class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson 
                     if (success) {
                         clientPayment = generatingPayment.generateNext("default", clientId);
                     }
-                    val client = Connection(ip, port,PAYMENT_URL, logger);
-                    success = client.sendMessage(ConMethod.PUT, gson.toJson(clientPayment));
+                    val client = Connection(ip, port, Adresses.SEQUENCER_PAYMENT_POST.url, logger);
+                    success = client.sendMessage(Adresses.SEQUENCER_PAYMENT_POST.method, gson.toJson(clientPayment));
                     client.disconnect();
+
                     if (success) {
                         count++;
-                        println(count);
                     }
 
 
-                    Thread.sleep(50);
+                    Thread.sleep(20);
                 }
                 stopped = true;
             }

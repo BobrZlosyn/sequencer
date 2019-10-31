@@ -1,6 +1,7 @@
 package ds.sequencer
 
 import com.google.gson.Gson
+import ds.core.common.Adresses
 import ds.core.common.Logger
 import ds.core.connection.ConMethod
 import ds.core.connection.Connection
@@ -16,7 +17,6 @@ class SendingMessages (gson : Gson, logger: Logger){
     var ip = "";
     var port = 8080;
     private var array : ArrayList <Payment>;
-    private var SHUFFLE_URL = "/shuffler/put"
 
     init {
         thread =  setThread();
@@ -42,17 +42,17 @@ class SendingMessages (gson : Gson, logger: Logger){
         val task = {
             while (true) {
                 if (array.isEmpty()) {
-                    Thread.sleep(250);
+                    Thread.sleep(200);
                     continue;
                 }
 
                 var success = false;
                 var payment = array[0];
                 try {
-                    var client = Connection(ip, port, SHUFFLE_URL, logger)
-                    success = client.sendMessage(ConMethod.PUT, gson.toJson(payment));
+                    var client = Connection(ip, port, Adresses.SHUFFLER_PAYMENT_POST.url, logger)
+                    success = client.sendMessage(Adresses.SHUFFLER_PAYMENT_POST.method, gson.toJson(payment));
                 }catch (e: ConnectException) {
-                    logger.logWarning("Couldnt connect to shuffler");
+                    logger.logWarning("Could'nt connect to shuffler");
                 }
 
                 if (!success) {
@@ -62,9 +62,8 @@ class SendingMessages (gson : Gson, logger: Logger){
                 }
             }
         }
-        var t = Thread(task);
 
-        return t;
+        return Thread(task);
     }
 
     fun addPayment(payment: Payment) {

@@ -2,10 +2,7 @@ import com.google.gson.Gson
 import ds.client.ClientAPIHandler
 import ds.client.SendingMessages
 import ds.core.common.Configiruation
-import ds.core.common.Logger
-import spark.Spark.*
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
