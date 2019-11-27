@@ -55,7 +55,12 @@ class ClientAPIHandler (messaging : SendingMessages, gson : Gson){
 
             var error = false;
             try {
-                messaging.maxCount = Integer.parseInt(request.params(Addresses.CLIENT_RUN_COUNT_GET.parameter));
+                var count = Integer.parseInt(request.params(Addresses.CLIENT_RUN_COUNT_GET.parameter));
+                if (count > 0 ) {
+                    messaging.maxCount = count;
+                } else {
+                    error = true;
+                }
             }catch (e: ParseException) {
                 Logger().logWarning("parsing parameter failed")
                 error = true;
