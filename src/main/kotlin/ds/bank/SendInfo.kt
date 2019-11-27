@@ -1,6 +1,6 @@
 package ds.bank
 
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
 import ds.core.connection.Connection
 
@@ -21,7 +21,6 @@ class SendInfo (shuffleIP : String, shufflePort : Int, logger: Logger, jsonBank:
 
     init {
         thread = threadDefine();
-
     }
 
     /**
@@ -41,8 +40,8 @@ class SendInfo (shuffleIP : String, shufflePort : Int, logger: Logger, jsonBank:
             while (true) {
                 Thread.sleep(500);
 
-                var client = Connection(shuffleIP, shufflePort, Adresses.SHUFFLER_BANK_PUT.url, logger);
-                var success = client.sendMessage(Adresses.SHUFFLER_BANK_PUT.method, bank);
+                var client = Connection(shuffleIP, shufflePort, Addresses.SHUFFLER_BANK_PUT.url, logger);
+                var success = client.sendMessage(Addresses.SHUFFLER_BANK_PUT.method, bank);
                 client.disconnect();
 
                 if (success) {

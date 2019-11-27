@@ -4,7 +4,7 @@ import ds.bank.APIHandler
 import ds.bank.ManagePayments
 import ds.bank.SendInfo
 import ds.core.Bank
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Configiruation
 
 
@@ -14,7 +14,7 @@ fun main(args: Array<String>) {
     var shufflePort = conf.getValidatePortAtIndex(3);
 
     // creating info class
-    var bank = Bank(Adresses.BANK_PATCH.url, conf.getIP(), conf.getPort(), Adresses.BANK_PATCH.method)
+    var bank = Bank(Addresses.BANK_POST.url, conf.getIP(), conf.getPort(), Addresses.BANK_POST.method)
 
     // creating default account
     val defaultAccount = Account(name = "default", money = 5000000, id = 1);

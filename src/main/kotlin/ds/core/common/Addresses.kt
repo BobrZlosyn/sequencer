@@ -2,10 +2,13 @@ package ds.core.common
 
 import ds.core.connection.ConMethod
 
-enum class Adresses (url: String, method : ConMethod) {
+/**
+ * enum for api calls
+ */
+enum class Addresses (url: String, method : ConMethod) {
 
     DEFAULT_GET ("/", ConMethod.GET),
-    BANK_PATCH ("/bank", ConMethod.PATCH) ,
+    BANK_POST ("/bank", ConMethod.POST) ,
     BANK_ACCOUNT_GET ("/bank/account", ConMethod.GET) ,
 
     CLIENT_STOP_GET ("/client/stop", ConMethod.GET),

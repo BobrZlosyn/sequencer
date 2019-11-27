@@ -1,7 +1,7 @@
 package ds.client
 
 import com.google.gson.Gson
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
 import ds.core.common.Status
 import spark.Spark.*
@@ -19,7 +19,7 @@ class ClientAPIHandler (messaging : SendingMessages, gson : Gson){
     }
 
     private fun getStopThread() {
-        get (Adresses.CLIENT_STOP_GET.url,Adresses.JSON_FORMAT.url, {
+        get (Addresses.CLIENT_STOP_GET.url,Addresses.JSON_FORMAT.url, {
                 request, response ->
             try {
                 messaging.stop();
@@ -34,7 +34,7 @@ class ClientAPIHandler (messaging : SendingMessages, gson : Gson){
     }
 
     private fun getStartThread() {
-        get (Adresses.CLIENT_RUN_GET.url,Adresses.JSON_FORMAT.url, {
+        get (Addresses.CLIENT_RUN_GET.url,Addresses.JSON_FORMAT.url, {
                 request, response ->
             try {
                 messaging.infinite = true;
@@ -50,12 +50,12 @@ class ClientAPIHandler (messaging : SendingMessages, gson : Gson){
     }
 
     private fun getSendingCount() {
-        get (Adresses.CLIENT_RUN_COUNT_GET.url,Adresses.JSON_FORMAT.url, {
+        get (Addresses.CLIENT_RUN_COUNT_GET.url,Addresses.JSON_FORMAT.url, {
                 request, response ->
 
             var error = false;
             try {
-                messaging.maxCount = Integer.parseInt(request.params(Adresses.CLIENT_RUN_COUNT_GET.parameter));
+                messaging.maxCount = Integer.parseInt(request.params(Addresses.CLIENT_RUN_COUNT_GET.parameter));
             }catch (e: ParseException) {
                 Logger().logWarning("parsing parameter failed")
                 error = true;

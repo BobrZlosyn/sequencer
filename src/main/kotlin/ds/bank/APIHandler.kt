@@ -2,7 +2,7 @@ package ds.bank
 
 import com.google.gson.Gson
 import ds.core.Bank
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
 import ds.core.payment.Payment
 import ds.core.common.Status
@@ -36,7 +36,7 @@ class APIHandler (gson: Gson, accounts : HashMap<String, Account>, managePayment
      * @return bank in json format
      */
     private fun getWelcome() {
-        Spark.get(Adresses.DEFAULT_GET.url, Adresses.JSON_FORMAT.url, { _, _ ->
+        Spark.get(Addresses.DEFAULT_GET.url, Addresses.JSON_FORMAT.url, { _, _ ->
             bank
         }, gson::toJson);
     }
@@ -46,7 +46,7 @@ class APIHandler (gson: Gson, accounts : HashMap<String, Account>, managePayment
      * @return accounts in json format
      */
     private fun getRemainMoney() {
-        Spark.get(Adresses.BANK_ACCOUNT_GET.url, Adresses.JSON_FORMAT.url, { _, _ ->
+        Spark.get(Addresses.BANK_ACCOUNT_GET.url, Addresses.JSON_FORMAT.url, { _, _ ->
             accounts
         }, gson::toJson);
     }
@@ -57,7 +57,7 @@ class APIHandler (gson: Gson, accounts : HashMap<String, Account>, managePayment
      */
     private fun patchMoney () {
 
-        Spark.patch( Adresses.BANK_PATCH.url, Adresses.JSON_FORMAT.url, { request, _ ->
+        Spark.post( Addresses.BANK_POST.url, Addresses.JSON_FORMAT.url, { request, _ ->
             var paymentRaw = request.body();
             //logger.logInfo("Receiving $paymentRaw");
             var payment = gson.fromJson(paymentRaw, Payment::class.java)

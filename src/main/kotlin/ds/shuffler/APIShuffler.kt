@@ -2,7 +2,7 @@ package ds.shuffler
 
 import com.google.gson.Gson
 import ds.core.Bank
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
 import ds.core.common.Status
 import ds.core.payment.Payment
@@ -23,7 +23,7 @@ class APIShuffler (logger: Logger, preparePayment: PreparePayment, shuffling : S
     }
 
     private fun putPayment() {
-        post (Adresses.SHUFFLER_PAYMENT_POST.url, Adresses.JSON_FORMAT.url, { request, response ->
+        post (Addresses.SHUFFLER_PAYMENT_POST.url, Addresses.JSON_FORMAT.url, { request, response ->
             var paymentRaw = request.body();
             logger.logInfo("Receive $paymentRaw");
             var payment = gson.fromJson(paymentRaw, Payment::class.java);
@@ -35,7 +35,7 @@ class APIShuffler (logger: Logger, preparePayment: PreparePayment, shuffling : S
     }
 
     private fun postBank() {
-        put (Adresses.SHUFFLER_BANK_PUT.url, Adresses.JSON_FORMAT.url, { request, response ->
+        put (Addresses.SHUFFLER_BANK_PUT.url, Addresses.JSON_FORMAT.url, { request, response ->
             var bankRaw = request.body();
             //logger.logInfo("Receive $bankRaw");
 

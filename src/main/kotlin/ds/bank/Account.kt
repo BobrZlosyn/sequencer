@@ -7,7 +7,7 @@ class Account (money: Int, name: String, id: Int){
 
     var money = money
     var name = name;
-    var id = 1;
+    var id = id;
 
 
 }

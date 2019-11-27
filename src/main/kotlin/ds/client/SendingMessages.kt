@@ -1,7 +1,7 @@
 package ds.client
 
 import com.google.gson.Gson
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
 import ds.core.connection.Connection
 
@@ -57,8 +57,8 @@ class SendingMessages (infinite : Boolean, maxCount : Int, clientId : Int, gson 
                     if (success) {
                         clientPayment = generatingPayment.generateNext("default", clientId);
                     }
-                    val client = Connection(ip, port, Adresses.SEQUENCER_PAYMENT_POST.url, logger);
-                    success = client.sendMessage(Adresses.SEQUENCER_PAYMENT_POST.method, gson.toJson(clientPayment));
+                    val client = Connection(ip, port, Addresses.SEQUENCER_PAYMENT_POST.url, logger);
+                    success = client.sendMessage(Addresses.SEQUENCER_PAYMENT_POST.method, gson.toJson(clientPayment));
                     client.disconnect();
 
                     if (success) {

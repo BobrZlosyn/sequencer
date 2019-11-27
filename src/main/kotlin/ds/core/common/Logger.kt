@@ -4,6 +4,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.math.log
 
+/**
+ * Logger
+ */
 class Logger {
     var logger = Logger.getLogger("mainLogger");
 

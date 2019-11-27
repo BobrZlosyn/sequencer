@@ -10,7 +10,13 @@ import java.io.BufferedReader
 import java.net.ConnectException
 import java.nio.charset.Charset
 
-
+/**
+ * class with defined connection, sending messages
+ * @param ip ip where to connect
+ * @param port port on which connect
+ * @param url adress to connect
+ * @param logger instance of Logger
+ */
 class Connection (ip : String, port: Int, url: String, logger: Logger) {
     private var urlPage : URL;
     private var con : HttpURLConnection;
@@ -24,6 +30,9 @@ class Connection (ip : String, port: Int, url: String, logger: Logger) {
 
     }
 
+    /**
+     * creates new connection
+     */
     fun newConnection(ip : String, port: Int, url: String) {
         con.disconnect();
         urlPath = getURL(ip, port, url);
@@ -32,6 +41,11 @@ class Connection (ip : String, port: Int, url: String, logger: Logger) {
 
     }
 
+    /**
+     * connect to adress with method
+     * @param method HTTP method which to use
+     * @return success
+     */
     private fun connect (method: ConMethod) : Boolean{
 
         con.connectTimeout = 5000;
@@ -56,6 +70,10 @@ class Connection (ip : String, port: Int, url: String, logger: Logger) {
         return true;
     }
 
+    /**
+     * sending data in json format
+     * @param json string in json format
+     */
     private fun sendData(json: String) {
         con.outputStream.use { os ->
             val input = json.toByteArray(Charset.forName("utf-8"));
@@ -63,6 +81,10 @@ class Connection (ip : String, port: Int, url: String, logger: Logger) {
         }
     }
 
+    /**
+     * reads response from connection
+     * @return response
+     */
     fun readResponse(): String {
         val status = con.responseCode
 
@@ -86,14 +108,27 @@ class Connection (ip : String, port: Int, url: String, logger: Logger) {
         return content.toString();
     }
 
+    /**
+     * disconnect connection
+     */
     fun disconnect(){
         con.disconnect();
     }
 
+    /**
+     * put together url
+     * @return url in complete format
+     */
     private fun getURL (ip : String, port: Int, url: String ) : String {
         return "http://$ip:$port$url";
     }
 
+    /**
+     * sending message with method
+     * @param method method which will be used
+     * @param json string in json format
+     * @return success of sending
+     */
     fun sendMessage(method : ConMethod, json: String) : Boolean {
         try {
             var success = connect(method);

@@ -2,12 +2,15 @@ package ds.core.common
 
 import spark.Spark
 import java.lang.Exception
-import java.net.BindException
 import kotlin.system.exitProcess
 import spark.Spark.initExceptionHandler
 
 
-
+/**
+ * configuration of clients and checker of arguments
+ * @param args input arguments
+ * @param expectedSize expected size of arguments
+ */
 class Configiruation (args : Array<String>, expectedSize : Int) {
 
     private var args = args;
@@ -24,6 +27,7 @@ class Configiruation (args : Array<String>, expectedSize : Int) {
             exitProcess(-2);
         }
 
+        // setting port and IP
         Spark.port(getPort());
         Spark.ipAddress(getIP())
         initExceptionHandler { e ->
@@ -32,7 +36,11 @@ class Configiruation (args : Array<String>, expectedSize : Int) {
         }
     }
 
-    fun validate () : Boolean {
+    /**
+     * validate IP and port for client
+     * @return if valid
+     */
+    private fun validate () : Boolean {
         if (args.size < expectedSize) {
             return false
         }
@@ -56,6 +64,12 @@ class Configiruation (args : Array<String>, expectedSize : Int) {
         return getValidatedPort(portIndex);
     }
 
+    /**
+     * get validated port for other clients or servers
+     * @param index index in arguments
+     * @return port
+     *
+     */
     private fun getValidatedPort(index: Int) : Int {
         var port = 0
         try {
@@ -68,6 +82,10 @@ class Configiruation (args : Array<String>, expectedSize : Int) {
         return port;
     }
 
+    /**
+     * get validated ip for other clients or servers
+     * @param index
+     */
     fun getValidatePortAtIndex(index : Int) : Int{
         validateIndex(index);
         if (validatePort(args[index])) {

@@ -1,12 +1,10 @@
 package ds.sequencer
 
 import com.google.gson.Gson
-import ds.core.common.Adresses
+import ds.core.common.Addresses
 import ds.core.common.Logger
-import ds.core.connection.ConMethod
 import ds.core.connection.Connection
 import ds.core.payment.Payment
-import ds.core.common.Status
 import java.net.ConnectException
 
 class SendingMessages (gson : Gson, logger: Logger){
@@ -49,8 +47,8 @@ class SendingMessages (gson : Gson, logger: Logger){
                 var success = false;
                 var payment = array[0];
                 try {
-                    var client = Connection(ip, port, Adresses.SHUFFLER_PAYMENT_POST.url, logger)
-                    success = client.sendMessage(Adresses.SHUFFLER_PAYMENT_POST.method, gson.toJson(payment));
+                    var client = Connection(ip, port, Addresses.SHUFFLER_PAYMENT_POST.url, logger)
+                    success = client.sendMessage(Addresses.SHUFFLER_PAYMENT_POST.method, gson.toJson(payment));
                 }catch (e: ConnectException) {
                     logger.logWarning("Could'nt connect to shuffler");
                 }
