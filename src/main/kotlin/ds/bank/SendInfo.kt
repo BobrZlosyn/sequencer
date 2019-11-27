@@ -37,17 +37,19 @@ class SendInfo (shuffleIP : String, shufflePort : Int, logger: Logger, jsonBank:
      */
     private fun threadDefine() : Thread {
         return Thread {
+            var interval: Long = 500;
             while (true) {
-                Thread.sleep(500);
+                Thread.sleep(interval);
 
                 var client = Connection(shuffleIP, shufflePort, Addresses.SHUFFLER_BANK_PUT.url, logger);
                 var success = client.sendMessage(Addresses.SHUFFLER_BANK_PUT.method, bank);
                 client.disconnect();
 
                 if (success) {
-                    break;
+                    interval = 60000;
                 }else {
                     logger.logInfo("Couldnt sent bank info to shuffler. Sending again");
+                    interval = 500;
                 }
             }
         }

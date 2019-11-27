@@ -11,7 +11,7 @@ import spark.Spark.put
 import java.lang.Exception
 
 
-class APIShuffler (logger: Logger, preparePayment: PreparePayment, shuffling : Suffling){
+class APIShuffler (logger: Logger, preparePayment: PreparePayment, shuffling : Shuffling){
     var logger = logger;
     val gson = Gson();
     var preparePayment = preparePayment;

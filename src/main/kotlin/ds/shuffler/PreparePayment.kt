@@ -2,9 +2,8 @@ package ds.shuffler
 
 import ds.core.Bank
 import ds.core.common.Logger
-import java.util.function.Consumer
 
-class PreparePayment (sendPayment: SendPayment, logger: Logger, shuffling : Suffling){
+class PreparePayment (sendPayment: SendPayment, logger: Logger, shuffling : Shuffling){
     var thread : Thread
     var banks = ArrayList<Bank>();
     var sendPayment = sendPayment;
@@ -20,20 +19,16 @@ class PreparePayment (sendPayment: SendPayment, logger: Logger, shuffling : Suff
     }
 
     fun addBank(bank : Bank) :Boolean {
-        var exists = false;
         for (i in 0 until banks.size) {
             if (banks[i].ip == bank.ip
                 && banks[i].port == bank.port
             ) {
-                exists = true;
+                return false;
             }
         }
 
-        if (!exists) {
-            banks.add(bank)
-            exists = true;
-        }
-        return exists;
+        banks.add(bank)
+        return true;
     }
 
     private fun getShuffle () : Thread {

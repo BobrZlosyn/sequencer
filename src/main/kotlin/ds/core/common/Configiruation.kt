@@ -32,6 +32,7 @@ class Configiruation (args : Array<String>, expectedSize : Int) {
         Spark.ipAddress(getIP())
         initExceptionHandler { e ->
             logger.logSevere("Address already in use");
+            println(e);
             exitProcess(-6)
         }
     }

@@ -8,11 +8,11 @@ class GeneratingPayment (min: Int, max: Int){
     var min = min
     var max = max
 
-    fun generateNext (name: String, id : Int) : ClientPayment {
+    fun generateNext (name: String, clientId : Int) : ClientPayment {
         return ClientPayment(
             money = generateMoney(),
             name = name,
-            id = id,
+            clientId = clientId,
             type = generateType()
         );
 

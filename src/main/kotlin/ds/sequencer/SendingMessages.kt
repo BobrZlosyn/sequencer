@@ -13,7 +13,7 @@ class SendingMessages (gson : Gson, logger: Logger){
     var gson = gson;
     var logger = logger;
     var ip = "";
-    var port = 8080;
+    var port = 8080; //default value
     private var array : ArrayList <Payment>;
 
     init {
@@ -39,6 +39,7 @@ class SendingMessages (gson : Gson, logger: Logger){
 
         val task = {
             while (true) {
+                // sleep task if it doesnt have to do anything
                 if (array.isEmpty()) {
                     Thread.sleep(200);
                     continue;
@@ -53,6 +54,7 @@ class SendingMessages (gson : Gson, logger: Logger){
                     logger.logWarning("Could'nt connect to shuffler");
                 }
 
+                // sleep task if action was unsuccessful and try next time
                 if (!success) {
                     Thread.sleep(250);
                 } else {

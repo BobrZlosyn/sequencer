@@ -10,7 +10,7 @@ class GeneratingWholePayment (){
             type = payment.type,
             money = payment.money,
             name = payment.name,
-            id = payment.id,
+            id = payment.clientId,
             sequence = seq
         );
     }

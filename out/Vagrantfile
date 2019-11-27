@@ -26,9 +26,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		shuffler.vm.provision "file", source: "./artifacts/shuffler_jar/shuffler.jar", destination: "$HOME/app/"
 		shuffler.vm.provision "shell", inline: <<-SHELL
 			yum -q -y install java-1.8.0-openjdk
-			nohup java -jar /home/vagrant/app/shuffler.jar "10.0.1.20" "8080" &> logs.out&
+			
 		SHELL
+		
+		shuffler.trigger.after :up do |trigger|
+            trigger.info = "running shuffler"
+            trigger.run_remote = {inline: "nohup java -jar /home/vagrant/app/shuffler.jar 10.0.1.20 8080 &> logs.out&"}
+        end
+
 	end
+
 
 	cluster.each_with_index do |(hostname, info), index|
 		config.vm.define hostname do |cfg|
@@ -43,8 +50,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			cfg.vm.provision "file", source: "./artifacts/bank_jar/bank.jar", destination: "$HOME/app/"
 			cfg.vm.provision "shell", inline: <<-SHELL
 				yum -q -y install java-1.8.0-openjdk
-				nohup java -jar /home/vagrant/app/bank.jar "#{info[:ip]}" "8080" "10.0.1.20" "8080" &> logs.out&
 			SHELL
+
+			cfg.trigger.after :up do |trigger|
+				trigger.info = "running bank"
+				trigger.run_remote = {inline: "nohup java -jar /home/vagrant/app/bank.jar #{info[:ip]} 8080 10.0.1.20 8080 &> logs.out&"
+				}
+			end
 		end # end config
     end # end cluster
 
@@ -58,8 +70,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		sequencer.vm.provision "file", source: "./artifacts/sequencer_jar/sequencer.jar", destination: "$HOME/app/"
         sequencer.vm.provision "shell", inline: <<-SHELL
             yum -q -y install java-1.8.0-openjdk
-			nohup java -jar /home/vagrant/app/sequencer.jar "10.0.1.30" "8080" "10.0.1.20" "8080" &> logs.out&
         SHELL
+
+		sequencer.trigger.after :up do |trigger|
+			trigger.info = "running sequencer"
+			trigger.run_remote = {inline: "nohup java -jar /home/vagrant/app/sequencer.jar 10.0.1.30 8080 10.0.1.20 8080 &> logs.out&"
+		}
+		end
 	end
 
 	config.vm.define "client" do |client|
@@ -73,8 +90,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		client.vm.provision "file", source: "./artifacts/client_jar/client.jar", destination: "$HOME/app/"
         client.vm.provision "shell", inline: <<-SHELL
             yum -q -y install java-1.8.0-openjdk
-			nohup java -jar /home/vagrant/app/client.jar "10.0.1.40" "8080" "10.0.1.30" "8080" "40" &> logs.out&
         SHELL
+
+		client.trigger.after :up do |trigger|
+			trigger.info = "running client"
+			trigger.run_remote = {inline: "nohup java -jar /home/vagrant/app/client.jar 10.0.1.40 8080 10.0.1.30 8080 100 &> logs.out&"
+		}
+		end
 	end
 
 end
